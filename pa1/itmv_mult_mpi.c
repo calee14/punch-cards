@@ -90,7 +90,10 @@ int itmv_mult(double local_A[] /* in */, double local_x[] /* in */,
   x = malloc(n * sizeof(double));
   succ = x != NULL;
   MPI_Allreduce(&succ, &all_succ, 1, MPI_INT, MPI_PROD, comm);
-  if (all_succ == 0) return 0; 
+  if (all_succ == 0) {
+    free(x);
+    return 0; 
+  }
   
   for (k=0; k<t; k++) {
     // gather all pieces of x and make remake x vec
@@ -98,11 +101,15 @@ int itmv_mult(double local_A[] /* in */, double local_x[] /* in */,
 
     for (local_i = 0; local_i < blocksize; local_i++) {
       local_y[local_i] = local_d[local_i];
-      int init_j = 0;
-      if(matrix_type == UPPER_TRIANGULAR) init_j = local_i;
+      int init_j = 0; 
+      if(matrix_type == UPPER_TRIANGULAR)
+        init_j = my_rank * blocksize + local_i;
       for (j = init_j; j < n; j++) local_y[local_i] += local_A[local_i * n + j] * x[j];
-      local_x[local_i] = local_y[local_i];
     }
+
+    for (local_i = 0; local_i < blocksize; local_i++)
+      local_x[local_i] = local_y[local_i];
+
   }
   MPI_Gather(local_x, blocksize, MPI_DOUBLE, global_x, blocksize, 
               MPI_DOUBLE, 0, comm);
