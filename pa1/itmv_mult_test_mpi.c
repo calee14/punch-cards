@@ -336,6 +336,124 @@ char *itmv_test(char *testmsg, int test_correctness, int n, int matrix_type,
                  and prints summary report */
 }
 
+char *itmv_seq_test1() {
+    if (my_rank != 0) return NULL;  // Only run on processor 0
+    
+    int n = 4096;  // Size for testing
+    int t = 1024;  // Number of iterations
+    double *A, *x, *d, *y;
+    char *msg = NULL;
+    double startwtime, endwtime;
+
+    // Allocate memory
+    A = malloc(n * n * sizeof(double));
+    x = malloc(n * sizeof(double));
+    d = malloc(n * sizeof(double));
+    y = malloc(n * sizeof(double));
+
+    if (A == NULL || x == NULL || d == NULL || y == NULL) {
+        return "Failed memory allocation";
+    }
+
+    // Initialize data
+    for (int i = 0; i < n; i++) {
+        x[i] = 0.0;
+        d[i] = (2.0 * n - 1.0) / n;
+        
+        for (int j = 0; j < n; j++) {
+            if (i == j) {
+                A[i * n + j] = 0.0;
+            } else {
+                A[i * n + j] = -1.0/n;
+            }
+        }
+    }
+
+    // Start timing
+    startwtime = MPI_Wtime();
+    
+    // Run sequential multiplication
+    int success = itmv_mult_seq(A, x, d, y, 0, n, t);
+    
+    // End timing
+    endwtime = MPI_Wtime();
+    printf("Sequential Test 1 (Regular Matrix): Wall clock time = %f seconds\n", 
+           endwtime - startwtime);
+
+    if (!success) {
+        msg = "Sequential multiplication failed";
+    }
+
+    // Cleanup
+    free(A);
+    free(x);
+    free(d);
+    free(y);
+
+    return msg;
+}
+
+char *itmv_seq_test2() {
+    if (my_rank != 0) return NULL;  // Only run on processor 0
+    
+    int n = 4096;
+    int t = 1024;
+    double *A, *x, *d, *y;
+    char *msg = NULL;
+    double startwtime, endwtime;
+
+    // Allocate memory
+    A = malloc(n * n * sizeof(double));
+    x = malloc(n * sizeof(double));
+    d = malloc(n * sizeof(double));
+    y = malloc(n * sizeof(double));
+
+    if (A == NULL || x == NULL || d == NULL || y == NULL) {
+        return "Failed memory allocation";
+    }
+
+    // Initialize data for upper triangular matrix
+    for (int i = 0; i < n; i++) {
+        x[i] = 0.0;
+        d[i] = (2.0 * n - 1.0) / n;
+
+        for (int j = 0; j < n; j++) {
+            if (i <= j) {
+                if (i == j) {
+                    A[i * n + j] = 0.0;
+                } else {
+                    A[i * n + j] = -1.0/n;
+                }
+            } else {
+                A[i * n + j] = 0.0;
+            }
+        }
+    }
+
+    // Start timing
+    startwtime = MPI_Wtime();
+    
+    // Run sequential multiplication
+    int success = itmv_mult_seq(A, x, d, y, UPPER_TRIANGULAR, n, t);
+    
+    // End timing
+    endwtime = MPI_Wtime();
+    printf("Sequential Test 2 (Upper Triangular): Wall clock time = %f seconds\n", 
+           endwtime - startwtime);
+
+    if (!success) {
+        msg = "Sequential multiplication failed for upper triangular";
+    }
+
+    // Cleanup
+    free(A);
+    free(x);
+    free(d);
+    free(y);
+
+    return msg;
+}
+
 char *itmv_test1() {
   return itmv_test("Test 1", TEST_CORRECTNESS, 4, !UPPER_TRIANGULAR, 1);
 }
@@ -410,9 +528,11 @@ void run_all_tests(void) {
   mu_run_test(itmv_test6);
   mu_run_test(itmv_test7);
   mu_run_test(itmv_test8);
-  /* mu_run_test(itmv_test9); mu_run_test(itmv_test10);
-     mu_run_test(itmv_test11); mu_run_test(itmv_test12);
-     mu_run_test(itmv_test13); mu_run_test(itmv_test14); */
+  /* mu_run_test(itmv_test9); mu_run_test(itmv_test10); */
+  mu_run_test(itmv_test11); mu_run_test(itmv_test12);
+  mu_run_test(itmv_seq_test1);
+  mu_run_test(itmv_seq_test2);
+  /* mu_run_test(itmv_test13); mu_run_test(itmv_test14); */
 }
 
 /*-------------------------------------------------------------------
