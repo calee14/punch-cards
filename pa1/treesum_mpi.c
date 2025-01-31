@@ -40,6 +40,7 @@ int global_sum(int my_int /* in */, int my_rank /* in */, int comm_sz /* in */,
     my_sum += val;
   }
 
+  // skip if not part of power of 2 tree
   if(my_rank >= lrg_power_two) {
     return my_sum;
   }
