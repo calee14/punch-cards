@@ -5,7 +5,7 @@
 # To know how to install OpenMPI, refer to the class website.
 # MPI_PREFIX = ~/local/bin/
 MPI_PREFIX = ~tyang_class/local/bin/
-NUM_PROC = 2 
+NUM_PROC = 2
 CC      = gcc
 MPICC   = $(MPI_PREFIX)mpicc
 MPIRUN  = $(MPI_PREFIX)mpirun
