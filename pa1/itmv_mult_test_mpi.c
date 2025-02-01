@@ -352,32 +352,27 @@ char *itmv_seq_test1() {
     y = malloc(n * sizeof(double));
 
     if (A == NULL || x == NULL || d == NULL || y == NULL) {
-        return "Failed memory allocation";
+        return "Failed space allocation";
     }
 
     // Initialize data
     for (int i = 0; i < n; i++) {
         x[i] = 0.0;
-        d[i] = (2.0 * n - 1.0) / n;
+        d[i] = (2.0*n-1.0) / n;
         
         for (int j = 0; j < n; j++) {
             if (i == j) {
-                A[i * n + j] = 0.0;
+                A[i*n + j] = 0.0;
             } else {
-                A[i * n + j] = -1.0/n;
+                A[i*n + j] = -1.0/n;
             }
         }
     }
 
-    // Start timing
     startwtime = MPI_Wtime();
-    
-    // Run sequential multiplication
     int success = itmv_mult_seq(A, x, d, y, 0, n, t);
-    
-    // End timing
     endwtime = MPI_Wtime();
-    printf("Sequential Test 1 (Regular Matrix): Wall clock time = %f seconds\n", 
+    printf("Seq Test 1 (Regular Matrix): Wall clock time = %f seconds\n", 
            endwtime - startwtime);
 
     if (!success) {
@@ -409,23 +404,23 @@ char *itmv_seq_test2() {
     y = malloc(n * sizeof(double));
 
     if (A == NULL || x == NULL || d == NULL || y == NULL) {
-        return "Failed memory allocation";
+        return "Failed space allocation";
     }
 
     // Initialize data for upper triangular matrix
     for (int i = 0; i < n; i++) {
         x[i] = 0.0;
-        d[i] = (2.0 * n - 1.0) / n;
+        d[i] = (2.0*n-1.0) / n;
 
         for (int j = 0; j < n; j++) {
             if (i <= j) {
                 if (i == j) {
-                    A[i * n + j] = 0.0;
+                    A[i*n+j] = 0.0;
                 } else {
-                    A[i * n + j] = -1.0/n;
+                    A[i*n+j] = -1.0/n;
                 }
             } else {
-                A[i * n + j] = 0.0;
+                A[i*n+j] = 0.0;
             }
         }
     }
