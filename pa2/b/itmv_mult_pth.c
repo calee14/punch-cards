@@ -80,6 +80,29 @@ void mv_compute(int i) {
  */
 void work_block(long my_rank) {
   /*Your solution*/
+  int i, j, start, k, stop, init_j;
+
+  int block_size = ceil((double) (matrix_dim) / thread_count);
+  start = my_rank * block_size;
+  stop = (my_rank+1) * block_size;
+  if (stop >= matrix_dim) stop = matrix_dim;
+
+  for(k=0; k<no_iterations; k++) {
+    for(i=start; i<stop; i++) {
+      mv_compute(i);
+    }
+
+    // barrier
+    pthread_barrier_wait(&mybarrier);
+
+    for(i=start;i<stop;i++) {
+      vector_x[i] = vector_y[i];
+    }
+
+    // barrier
+    pthread_barrier_wait(&mybarrier);
+  }
+  
 }
 
 /*---------------------------------------------------------------------
@@ -108,6 +131,30 @@ void work_block(long my_rank) {
  */
 void work_blockcyclic(long my_rank) {
   /*Your solution*/
+  int i, j, k, init_j, cyclic_count, row;
+
+  for(k=0; k<no_iterations; k++) {
+    for(i=my_rank*cyclic_blocksize; i<matrix_dim; i+=thread_count*cyclic_blocksize) {
+      for(cyclic_count=0; cyclic_count<cyclic_blocksize; cyclic_count++) {
+        if(i+cyclic_count >= matrix_dim) break;
+        mv_compute(i+cyclic_count);
+      }
+    }
+
+    // barrier
+    pthread_barrier_wait(&mybarrier);
+
+    for(i=my_rank*cyclic_blocksize; i<matrix_dim; i+=thread_count*cyclic_blocksize) {
+      for(cyclic_count=0; cyclic_count<cyclic_blocksize; cyclic_count++) {
+        if(i+cyclic_count >= matrix_dim) break;
+        row = i + cyclic_count;
+        vector_x[row] = vector_y[row];
+      }
+    }
+
+    // barrier
+    pthread_barrier_wait(&mybarrier);
+  }
 }
 
 /*-------------------------------------------------------------------

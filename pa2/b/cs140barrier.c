@@ -20,7 +20,8 @@
 
 int cs140barrier_init(cs140barrier *bstate, int total_nthread) {
   /*Your solution*/
-
+  bstate->odd_round = False;
+  bstate->total_nthread = total_nthread;
   return 0;
 }
 
