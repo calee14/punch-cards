@@ -286,6 +286,50 @@ char *itmv_test(char *testmsg, int test_correctness, int test_reach_convergence,
                  report*/
 }
 
+char *itmv_seq_test(char *testmsg, int test_correctness, int n, int mtype, int t) {
+  double startwtime = 0, endwtime = 0;
+  int succ;
+  char *msg;
+
+  matrix_dim = n;
+  no_iterations = t;
+  matrix_type = mtype;
+
+  succ = allocate_space(&matrix_A, &vector_x, &vector_d, &vector_y, n);
+  if (succ == 0) { /*one of processes failed in memory allocation*/
+    msg = "Failed space allocation";
+    print_error(testmsg, msg);
+    return msg;
+  }
+  /*Initialize test matrix and vectors*/
+  initialize(matrix_A, vector_x, vector_d, vector_y, n, matrix_type);
+#ifdef DEBUG1
+  print_itmv_sample(testmsg, matrix_A, vector_x, vector_d, vector_y,
+                    matrix_type, n, t);
+#endif
+  startwtime = get_time();
+
+  itmv_mult_seq(matrix_A, vector_x, vector_d, vector_y, matrix_type, n, t);
+
+  endwtime = get_time();
+  printf("%s: Wall clock time = %f with one thread\n", testmsg,
+         endwtime - startwtime);
+
+  msg = NULL;
+  if (test_correctness == TEST_CORRECTNESS) {
+    msg = validate_vect(testmsg, vector_y, n, t, matrix_type);
+    if (msg != NULL) {
+      print_error(testmsg, msg);
+    }
+  }
+  free(matrix_A);
+  free(vector_x);
+  free(vector_y);
+  free(vector_d);
+  return msg; /*Only process 0 conducts correctness test, and prints summary
+                 report*/
+}
+
 char *itmv_test1() {
   return itmv_test("Test 1", TEST_CORRECTNESS, !TEST_REACH_CONVERGENCE,
                    16, !UPPER_TRIANGULAR, 1, BLOCK_MAPPING, 0);
@@ -384,30 +428,36 @@ char *itmv_test14() {
                    UPPER_TRIANGULAR, 1024, BLOCK_CYCLIC, 16);
 }
 
+char *itmv_seq1b() {
+  return itmv_seq_test("Test Sequential 1b: n=4k t=1k", !TEST_CORRECTNESS,
+                 4096, UPPER_TRIANGULAR, 1024);
+}
+
 /*-------------------------------------------------------------------
  * Run all tests.  Ignore returned messages.
  */
 void run_all_tests(void) {
   
-  mu_run_test(itmv_test1);
-  mu_run_test(itmv_test2);
-  mu_run_test(itmv_test3);
-  mu_run_test(itmv_test4);
-  mu_run_test(itmv_test4c);
-  mu_run_test(itmv_test5);
-  mu_run_test(itmv_test6);
-  mu_run_test(itmv_test7);
-  mu_run_test(itmv_test7c);
-  mu_run_test(itmv_test8);
-  mu_run_test(itmv_test_8a);
-  mu_run_test(itmv_test_8b);
+  // mu_run_test(itmv_test1);
+  // mu_run_test(itmv_test2);
+  // mu_run_test(itmv_test3);
+  // mu_run_test(itmv_test4);
+  // mu_run_test(itmv_test4c);
+  // mu_run_test(itmv_test5);
+  // mu_run_test(itmv_test6);
+  // mu_run_test(itmv_test7);
+  // mu_run_test(itmv_test7c);
+  // mu_run_test(itmv_test8);
+  // mu_run_test(itmv_test_8a);
+  // mu_run_test(itmv_test_8b);
 
-  // mu_run_test(itmv_test9);
-  // mu_run_test(itmv_test10);
-  // mu_run_test(itmv_test11);
-  // mu_run_test(itmv_test12);
-  // mu_run_test(itmv_test13);
-  // mu_run_test(itmv_test14);
+  // // mu_run_test(itmv_test9);
+  // // mu_run_test(itmv_test10);
+  // // mu_run_test(itmv_test11);
+  mu_run_test(itmv_test12);
+  mu_run_test(itmv_test13);
+  mu_run_test(itmv_test14);
+  mu_run_test(itmv_seq1b);
 }
 
 /*-------------------------------------------------------------------

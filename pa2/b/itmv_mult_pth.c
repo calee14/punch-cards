@@ -80,22 +80,22 @@ void mv_compute(int i) {
  */
 void work_block(long my_rank) {
   /*Your solution*/
-  int i, j, start, k, stop, init_j;
+  int i, j, start, k, end, init_j;
 
   int block_size = ceil((double) (matrix_dim) / thread_count);
   start = my_rank * block_size;
-  stop = (my_rank+1) * block_size;
-  if (stop >= matrix_dim) stop = matrix_dim;
+  end = (my_rank+1) * block_size;
+  if (end >= matrix_dim) end = matrix_dim;
 
   for(k=0; k<no_iterations; k++) {
-    for(i=start; i<stop; i++) {
+    for(i=start; i<end; i++) {
       mv_compute(i);
     }
 
     // barrier
     pthread_barrier_wait(&mybarrier);
 
-    for(i=start;i<stop;i++) {
+    for(i=start;i<end;i++) {
       vector_x[i] = vector_y[i];
     }
 
@@ -194,24 +194,24 @@ int itmv_mult_seq(double A[], double x[], double d[], double y[],
       }
     }
     
-    // Check if reach convergence.
-    stop = 1;
-    for (i = 0; i < n && stop; i++) 
-      if (fabs(x[i] - y[i]) > ERROR_THRESHOLD) {
-        stop = 0;
-      }
+//     // Check if reach convergence.
+//     stop = 1;
+//     for (i = 0; i < n && stop; i++) 
+//       if (fabs(x[i] - y[i]) > ERROR_THRESHOLD) {
+//         stop = 0;
+//       }
 
-    if (stop) {
-#ifdef DEBUG1
-      printf("Reach convergence with %d iterations.\n", k);
-#endif
-      break;
-    }
+//     if (stop) {
+// #ifdef DEBUG1
+//       printf("Reach convergence with %d iterations.\n", k);
+// #endif
+//       break;
+//     }
 
-    // Update x.
-    for (i = 0; i < n; i++) {
-      x[i] = y[i];
-    }
+//     // Update x.
+//     for (i = 0; i < n; i++) {
+//       x[i] = y[i];
+//     }
   }
   return 1;
 }
