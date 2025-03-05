@@ -29,7 +29,7 @@ void mult_vec_async(int n, int rows_per_thread, int num_async_iter, float *y, fl
   int idx=0; /*Assign a linearized thread ID, so I can be responsible for some rows*/
   /*Your solution to compute idx */
   idx = blockIdx.x * blockDim.x + threadIdx.x;
-  
+
   for (int i = 0; i < rows_per_thread; i++) {
     int row_index = idx * rows_per_thread + i;
     y[row_index] = x[row_index]; //Start with current value of x
@@ -37,7 +37,14 @@ void mult_vec_async(int n, int rows_per_thread, int num_async_iter, float *y, fl
   for (int k = 0; k < num_async_iter; k++) {
     /*Perform asynchronous Gauss-Seidel method for y=d+Ay*/
     /*Your solution*/
-    
+    for (int i=0; i < rows_per_thread; i++) {
+      int row_index = idx * rows_per_thread + i;
+      double sum = d[row_index];
+      for (int j=0; j < n; j++) {
+        sum += A[row_index*n + j]*y[j];
+      }
+      y[row_index] = sum;
+    }
 
 
 #ifdef DEBUG1
@@ -137,8 +144,8 @@ int it_mult_vec(int N,
   }
   result = cudaMemcpy(A_d, A, A_size, cudaMemcpyHostToDevice);
   if (result) {
-    print("Error in cudaMemcpy. Error code is %d.\n", result);
-    return -1
+    printf("Error in cudaMemcpy. Error code is %d.\n", result);
+    return -1;
   }
   
   /*Allocate, and copy other  data to the device global memory*/
