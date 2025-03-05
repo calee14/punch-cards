@@ -194,24 +194,24 @@ int itmv_mult_seq(double A[], double x[], double d[], double y[],
       }
     }
     
-//     // Check if reach convergence.
-//     stop = 1;
-//     for (i = 0; i < n && stop; i++) 
-//       if (fabs(x[i] - y[i]) > ERROR_THRESHOLD) {
-//         stop = 0;
-//       }
+    // Check if reach convergence.
+    stop = 1;
+    for (i = 0; i < n && stop; i++) 
+      if (fabs(x[i] - y[i]) > ERROR_THRESHOLD) {
+        stop = 0;
+      }
 
-//     if (stop) {
-// #ifdef DEBUG1
-//       printf("Reach convergence with %d iterations.\n", k);
-// #endif
-//       break;
-//     }
+    if (stop) {
+#ifdef DEBUG1
+      printf("Reach convergence with %d iterations.\n", k);
+#endif
+      break;
+    }
 
-//     // Update x.
-//     for (i = 0; i < n; i++) {
-//       x[i] = y[i];
-//     }
+    // Update x.
+    for (i = 0; i < n; i++) {
+      x[i] = y[i];
+    }
   }
   return 1;
 }
