@@ -347,7 +347,10 @@ int gsit_mult_vec_seq(int N,
           fabs(y[i] - x[i]) > CONVERGE_THRESHOLD ? 0 : reach_converge;
     }
 
-    if (reach_converge) break;
+    if (reach_converge) {
+      printf('seq converged early: number of iterations %d', k);
+      break;
+    }
     for (i = 0; i < N; i++) {//remember last version 
       x[i] = y[i];
     }

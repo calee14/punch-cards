@@ -99,8 +99,8 @@ const char*  validate_vect(
   int i;
   if(n <= 0 )
     return "Failed: 0 or negative size";
-  if(n > MAX_TEST_MATRIX_SIZE)
-    return "Failed: Too big to validate";
+  // if(n > MAX_TEST_MATRIX_SIZE)
+  //   return "Failed: Too big to validate";
 
   // Calculate expected.
   float *A, *x, *d, *y, *diff;
@@ -283,6 +283,19 @@ const char * itmv_test11a() {
       USE_ASYNC, !USE_SHARED_X);
 }
 
+const char * itmv_test12() {
+  return itmv_test(
+      "Test 11: n=4K t=1K 32x128 threads/Async",
+      TEST_CORRECTNESS, 4096, !UPPER_TRIANGULAR, 1024, 1<<5, 1<<7,
+      USE_ASYNC, !USE_SHARED_X);
+}
+const char * itmv_test12a() {
+  return itmv_test(
+      "Test 11a: n=4K t=1K 8x128 threads/Async",
+      TEST_CORRECTNESS, 4096, !UPPER_TRIANGULAR, 1024, 1<<3, 1<<7,
+      USE_ASYNC, !USE_SHARED_X);
+}
+
 
 /*-------------------------------------------------------------------
  * Run all basic tests.  
@@ -332,6 +345,11 @@ void run_large_matrix_tests(void){
   mu_run_test(itmv_test11a);
 }
 
+void run_large_matrix_tests_with_seq(void) {
+  mu_run_test(itmv_test12);
+  mu_run_test(itmv_test12a);
+}
+
 /*-------------------------------------------------------------------
  * The main entrance to run all tests.
  * Only Proc 0 prints the test summary
@@ -341,6 +359,8 @@ int main(){
   run_basic_tests();
   /*You should call large matrix tests only after passing your basic tests.*/
   /*run_large_matrix_tests();*/
+
+  run_large_matrix_tests_with_seq();
 
   mu_print_test_summary("\nSummary:");
 }
