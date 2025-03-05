@@ -99,8 +99,8 @@ const char*  validate_vect(
   int i;
   if(n <= 0 )
     return "Failed: 0 or negative size";
-  // if(n > MAX_TEST_MATRIX_SIZE)
-  //   return "Failed: Too big to validate";
+  if(n > MAX_TEST_MATRIX_SIZE)
+    return "Failed: Too big to validate";
 
   // Calculate expected.
   float *A, *x, *d, *y, *diff;
@@ -360,7 +360,7 @@ int main(){
   /*You should call large matrix tests only after passing your basic tests.*/
   /*run_large_matrix_tests();*/
 
-  run_large_matrix_tests_with_seq();
+  // run_large_matrix_tests_with_seq();
 
   mu_print_test_summary("\nSummary:");
 }

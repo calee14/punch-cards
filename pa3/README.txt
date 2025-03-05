@@ -12,7 +12,7 @@ GradeScope account name of Student 2:
 Report for Question 1 
 
 List your code change for this question 
-Changes: ran large tests by invoking the 'run_large_matrix_tests' function
+Changes: Ran large tests by invoking the 'run_large_matrix_tests' function
 
 Parallel time for n=4K, t=1K,  4x128  threads
 Time cost in seconds: 3.931096 (threads)
@@ -39,7 +39,7 @@ Removed due to the change of the assignment
 ----------------------------------------------------------------------------
 Report for Question 3 
 List your code change for this question
-Changes: ran large tests by invoking the 'run_large_matrix_tests' function
+Changes: Ran large tests by invoking the 'run_large_matrix_tests' function. Also ran the validate function to run the sequential function on the matrix and output the number of iterations.
 
 
 Let the default number of asynchronous iterations be 5 in a batch as specified in it_mult_vec.h.
@@ -54,7 +54,7 @@ Time cost in seconds: 0.060423
 Is the number of iterations  executed by  above parallel asynchronous Gauss Seidel-Seidel method  bigger or smaller  than that
 of the sequential Gauss Seidel-Seidel code under the same converging error threshold (1e-3)?  
 Explain the reason based on the running trace of above two thread configurations that more threads may not yield more time reduction in this case. 
-
+The number of iterations executed by the parallel asynchronous Gauss Seidel-Seidel method is bigger than that of the sequential Gauss Seidel-Seidel method under the same convergence threshold. With the sequential method, the entire x is updated as intended where x2 is calcuated with the udpated values of x0 and x1. However, with the parallel method, the x vector is updated in partitions and the calcualtions might involve outdated elements in the x vector. This will slow convergence because of the information is lagging behind. More threads in this case can't reduce the amount of iterations it takes to converge. More threads means that we'll be calcuating the new x vector with some outdated elements which will mean we can properly use the Gauss Seidel-Seidel method and converge as expected. 
 
 
 

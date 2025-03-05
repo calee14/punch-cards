@@ -348,7 +348,7 @@ int gsit_mult_vec_seq(int N,
     }
 
     if (reach_converge) {
-      printf("seq converged early: number of iterations %d", k);
+      printf("gsit_mult_vec_seq converged early: %d iterations\n", k);
       break;
     }
     for (i = 0; i < N; i++) {//remember last version 
